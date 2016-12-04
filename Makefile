@@ -15,7 +15,8 @@ clean:
 	rm -f *.o *~ crossword
 
 commit:
-	git commit -m "Update" *.h *.cpp Makefile README.md
+	git commit -m "Update" Makefile README.md
+	git status
 
 pull:
 	-make commit
