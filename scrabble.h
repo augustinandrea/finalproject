@@ -2,6 +2,7 @@
 #define SCRABBLE_H
 
 #include <vector>
+#include <string>
 #include "polygon.h"
 
 typedef enum { board, hand, pile } letter_location_t;
@@ -20,7 +21,11 @@ class Word {
  public:
   vector<Letter &> letters; // the letters in the word
   vector<Square &> squares; // the squares on the board used by this word
+  string GetString(); // c++ string for the word
+  bool Legal();       // Is this a legal scrabble word ?
   Word();
+ private:
+  string word; // c++ string for the word
 };
 
 class Player {
