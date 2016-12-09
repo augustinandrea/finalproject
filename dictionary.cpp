@@ -4,6 +4,6 @@
 Dictionary::Dictionary(istream *input) {
 }
 
-// checlk if the string is a legal scrabble word
+// check if the string is a legal scrabble word
 bool isLegal(string& s) {    // Is the string a legal scrabble word?
 }
