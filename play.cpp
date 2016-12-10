@@ -1,8 +1,8 @@
 #include "scrabble.h"
 #include "gfx.h"
 
-const int SCREENWD = Square::WIDTH*Board::SIZE;
-const int SCREENHT = Square::HEIGHT*Board::SIZE;
+const int SCREENWD = Square::WIDTH*(Board::SIZE + 2);
+const int SCREENHT = Square::HEIGHT*(Board::SIZE + 2);
 
 int main() {
   Board board;

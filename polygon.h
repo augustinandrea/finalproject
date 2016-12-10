@@ -17,10 +17,10 @@ const Color WHITE = Color(255,255,255);
 const Color RED =   Color(255,0,0);
 const Color GREEN = Color(0,255,0);
 const Color BLUE =  Color(0,0,255);
-const Color LIGHTBLUE = Color(0,0,255);
+const Color LIGHTBLUE = Color(135,206,250);
 const Color DARKBLUE = Color(0,0,255);
-const Color BIEGE = Color(0,0,255);
-const Color PINK = Color(0,0,255);
+const Color BEIGE = Color(238,223,204);
+const Color PINK = Color(255,192,203);
 
 
 void gfx_color(Color c);

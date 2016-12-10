@@ -18,8 +18,8 @@ class Square {
   void SetLetterMultiplier(int);
   int word_multiplier;
   int letter_multiplier;
-  static const int HEIGHT = 50;
-  static const int WIDTH = 50;
+  static const int HEIGHT = 80;
+  static const int WIDTH = 80;
   Color color;
   void Draw(Point p);
 };
