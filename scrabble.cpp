@@ -57,6 +57,16 @@ void Square::Draw(Point p) {
   for(int i = p.x+WIDTH-BORDER; i <= p.x+WIDTH; i++) {
     gfx_line(i, p.y, i, p.y+HEIGHT);
   }
+  // Write the text for the multipiers on the square
+  if(word_multiplier == 2) {
+    // Double word score
+  } else if(word_multiplier == 3) {
+    // Triple word score
+  } else if(letter_multiplier == 2) {
+    // Double letter score
+  } else if(letter_multiplier == 3) {
+    // Triple letter score
+  }
 }
 
 void Square::SetWordMultiplier(int m) {
