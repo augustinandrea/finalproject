@@ -1,9 +1,9 @@
-#include "polygon.h"
-#include "gfx.h"
 #include <unistd.h>
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
+#include "polygon.h"
+#include "gfxnew.h"
 
 using namespace std;
 

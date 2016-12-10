@@ -1,17 +1,19 @@
 #include "scrabble.h"
-#include "gfx.h"
-
-const int SCREENWD = Square::WIDTH*(Board::SIZE + 2);
-const int SCREENHT = Square::HEIGHT*(Board::SIZE + 2);
+#include "gfxnew.h"
 
 int main() {
+  ScrabbleGame game;
   Board board;
+  int winwd, winht;
 
-  gfx_open(SCREENWD, SCREENHT, "SCRABBLE");
+  winwd = 1200;
+  winht = 1200;
+
+  gfx_open(winwd, winht, "SCRABBLE");
   gfx_clear();
   
-  // Testing.  Draw the board.
-  board.Draw();
+  // Testing.  Draw the full screen
+  game.Draw();
 
   gfx_wait();
 

@@ -3,20 +3,21 @@
 
 # GFLAGS=-g -c -std=c++11 -DDEBUG
 GFLAGS=-g -c -std=c++11
+INCS=dictionary.h gfxnew.h polygon.h scrabble.h
 
-scrabble: scrabble.o polygon.o play.o dictionary.o gfx.o
-	g++ scrabble.o polygon.o play.o dictionary.o gfx.o -lX11 -o scrabble
+scrabble: scrabble.o polygon.o play.o dictionary.o gfxnew.o
+	g++ scrabble.o polygon.o play.o dictionary.o gfxnew.o -lX11 -o scrabble
 
-scrabble.o: scrabble.cpp scrabble.h
+scrabble.o: scrabble.cpp ${INCS}
 	g++ ${GFLAGS} scrabble.cpp -o scrabble.o
 
-polygon.o: polygon.cpp polygon.h
+polygon.o: polygon.cpp ${INCS}
 	g++ ${GFLAGS} polygon.cpp -o polygon.o
 
-play.o: play.cpp scrabble.h gfx.h
+play.o: play.cpp ${INCS}
 	g++ ${GFLAGS} play.cpp -o play.o
 
-dictionary.o: dictionary.cpp dictionary.h
+dictionary.o: dictionary.cpp ${INCS}
 	g++ ${GFLAGS} dictionary.cpp -o dictionary.o
 
 clean:

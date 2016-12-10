@@ -21,7 +21,7 @@ const Color LIGHTBLUE = Color(135,206,250);
 const Color DARKBLUE = Color(0,0,255);
 const Color BEIGE = Color(238,223,204);
 const Color PINK = Color(255,192,203);
-
+const Color DARKBEIGE = Color(205,175,149);
 
 void gfx_color(Color c);
 

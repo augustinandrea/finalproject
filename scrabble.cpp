@@ -1,9 +1,11 @@
 #include "scrabble.h"
-#include "gfx.h"
+#include "gfxnew.h"
+#include <cmath>
 
 vector<Point> Board::triple_word_score = {
     Point(0,0), Point(0,7), Point(0,14), Point(7,0), Point(14,0), Point(14,7), Point(14,14)
 };
+
 vector<Point> Board::double_word_score = { // TBD
   Point(1,1), Point(2,2), Point(3,3), Point(4,4),
   Point(13,13), Point(12,12), Point(11,11), Point(10,10),
@@ -11,12 +13,14 @@ vector<Point> Board::double_word_score = { // TBD
   Point(1,13), Point(2,12), Point(3,11), Point(4,10),
   Point(7,7),
 };
+
 vector<Point> Board::triple_letter_score = { // TBD
   Point(1,5), Point(1,9),
   Point(5,1), Point(5,5), Point(5,9), Point(5,13),
   Point(9,1), Point(9,5), Point(9,9), Point(9,13),
   Point(13,5), Point(13,9)
 };
+
 vector<Point> Board::double_letter_score = { // TBD
   Point(0,3), Point(0,11),
   Point(2,6), Point(2,8),
@@ -29,6 +33,8 @@ vector<Point> Board::double_letter_score = { // TBD
   Point(14,3), Point(14,11)
 };
 
+int Square::width;
+int Square::height;
 
 Square::Square() {
   word_multiplier = 1;
@@ -40,24 +46,24 @@ Square::Square() {
 void Square::Draw(Point p) {
   const int BORDER = 2;
   gfx_color(color);
-  for(int i = p.y; i < p.y+HEIGHT; i++) {
-     gfx_line(p.x, i, p.x+WIDTH, i);
+  for(int i = p.y; i < p.y+height; i++) {
+     gfx_line(p.x, i, p.x+width, i);
   }
   // Draw the Borders
   gfx_color(WHITE);
   for(int i = p.y; i <= p.y+BORDER; i++) {
-     gfx_line(p.x, i, p.x+WIDTH, i);
+     gfx_line(p.x, i, p.x+width, i);
   }
-  for(int i = p.y+HEIGHT-BORDER; i <= p.y+HEIGHT; i++) {
-     gfx_line(p.x, i, p.x+WIDTH, i);
+  for(int i = p.y+height-BORDER; i <= p.y+height; i++) {
+     gfx_line(p.x, i, p.x+width, i);
   }
   for(int i = p.x; i <= p.x+BORDER; i++) {
-    gfx_line(i, p.y, i, p.y+HEIGHT);
+    gfx_line(i, p.y, i, p.y+height);
   }
-  for(int i = p.x+WIDTH-BORDER; i <= p.x+WIDTH; i++) {
-    gfx_line(i, p.y, i, p.y+HEIGHT);
+  for(int i = p.x+width-BORDER; i <= p.x+width; i++) {
+    gfx_line(i, p.y, i, p.y+height);
   }
-  // Write the text for the multipiers on the square
+  // Write the text for the multipliers on the square
   if(word_multiplier == 2) {
     // Double word score
   } else if(word_multiplier == 3) {
@@ -108,9 +114,26 @@ Board::Board() {
 
 void Board::Draw() {
   // Draw the squares
+  Square::height = (gfx_windowheight()*.7 - Player::displayht)/SIZE;
+  Square::width = Square::height;
   for(int i = 0; i < SIZE; i++) {
     for(int j = 0; j < SIZE; j++) {
-      squares[i][j].Draw(Point(Square::WIDTH*(i+1),Square::HEIGHT*(j+1)));
+      squares[i][j].Draw(Point(Square::height*(i+1),Square::width*(j+1)));
     }
   }
+}
+
+void ScrabbleGame::Draw() {
+  board.Draw();
+}
+
+ScrabbleGame::ScrabbleGame() {
+}
+
+int Player::displaywd;
+int Player::displayht;
+
+Player::Player() {
+  displayht = gfx_windowheight()*.1;
+  displaywd = gfx_windowwidth()*.5;
 }

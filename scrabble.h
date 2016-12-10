@@ -18,26 +18,27 @@ class Square {
   void SetLetterMultiplier(int);
   int word_multiplier;
   int letter_multiplier;
-  static const int HEIGHT = 80;
-  static const int WIDTH = 80;
+  static int height;
+  static int width;
   Color color;
   void Draw(Point p);
 };
 
 class Letter {
  public:
-  char c;           // The character
-  const int points; // How many points is this letter worth
+  char c;             // The character
+  const int points;   // How many points is this letter worth
   letter_location_t where;  // Where am i?
-  Square &square;    // If on the board, what square are we on?
-  Player &hand;      // If in someones hand, which one?
+  Square &square;     // If on the board, what square are we on?
+  Player &hand;       // If in someones hand, which one?
   void Draw(Point p); // Draw the letter on the screen
+  static Color color; // Color of a letter tile
 };
 
 class Word {
  public:
-  vector<Letter*> letters; // the letters in the word
-  vector<Square*> squares; // the squares on the board used by this word
+  vector<Letter> letters; // the letters in the word
+  vector<Square> squares; // the squares on the board used by this word
   string GetString(); // c++ string for the word
   bool Legal();       // Is this a legal scrabble word ?
   Word();
@@ -49,10 +50,11 @@ class Player {
  public:
   Player();
   void Draw(Point p);  // Draw the player record on the screen
-  vector<Letter *> hand;  // The letters in the players hand
-  vector<Word *> words;   // Words on the board played by the player
+  vector<Letter> hand;  // The letters in the players hand
+  vector<Word> words;   // Words on the board played by the player
   int score;  // Players current score
-  
+  static int displaywd;
+  static int displayht;
 };
 
 class Board {
@@ -69,13 +71,13 @@ class Board {
 
 // A complete state of a Scrabble game
 class ScrabbleGame {
+ public:
   ScrabbleGame();
-  
+  void Draw();
   vector<Letter> letters;  // All of the letters
   vector<Letter> pile;     // Letter draw pile
-  Board board;             // the board
   vector<Player> players;  // All of the players
-  
+  Board board;             // the board
 };
 
 #endif
