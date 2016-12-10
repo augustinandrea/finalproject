@@ -1,7 +1,7 @@
 #include "dictionary.h"
 
 // Read the words in and create the dictionary
-Dictionary::Dictionary(istream *input) {
+Dictionary::Dictionary(istream& input) {
 }
 
 // check if the string is a legal scrabble word

@@ -5,7 +5,24 @@
 #include <string>
 #include "polygon.h"
 
+using namespace std;
+
 typedef enum { board, hand, pile } letter_location_t;
+
+class Player;
+
+class Square {
+ public:
+  Square();
+  void SetWordMultiplier(int);
+  void SetLetterMultiplier(int);
+  int word_multiplier;
+  int letter_multiplier;
+  static const int HEIGHT = 50;
+  static const int WIDTH = 50;
+  Color color;
+  void Draw(Point p);
+};
 
 class Letter {
  public:
@@ -19,8 +36,8 @@ class Letter {
 
 class Word {
  public:
-  vector<Letter &> letters; // the letters in the word
-  vector<Square &> squares; // the squares on the board used by this word
+  vector<Letter*> letters; // the letters in the word
+  vector<Square*> squares; // the squares on the board used by this word
   string GetString(); // c++ string for the word
   bool Legal();       // Is this a legal scrabble word ?
   Word();
@@ -32,16 +49,22 @@ class Player {
  public:
   Player();
   void Draw(Point p);  // Draw the player record on the screen
-  vector<Letter &> hand;  // The letters in the players hand
-  vector<Word &> words;   // Words on the board played by the player
+  vector<Letter *> hand;  // The letters in the players hand
+  vector<Word *> words;   // Words on the board played by the player
   int score;  // Players current score
   
 };
 
 class Board {
  public:
-  Square squares[15][15];
+  static const int SIZE = 15;
+  static vector<Point> triple_word_score;
+  static vector<Point> double_word_score;
+  static vector<Point> triple_letter_score;
+  static vector<Point> double_letter_score;
+  Square squares[SIZE][SIZE];
   Board();
+  void Draw();
 };
 
 // A complete state of a Scrabble game
