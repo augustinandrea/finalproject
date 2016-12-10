@@ -45,16 +45,16 @@ void Square::Draw(Point p) {
   }
   // Draw the Borders
   gfx_color(WHITE);
-  for(int i = p.y; i < p.y+BORDER; i++) {
+  for(int i = p.y; i <= p.y+BORDER; i++) {
      gfx_line(p.x, i, p.x+WIDTH, i);
   }
-  for(int i = p.y+HEIGHT-BORDER; i < p.y+HEIGHT; i++) {
+  for(int i = p.y+HEIGHT-BORDER; i <= p.y+HEIGHT; i++) {
      gfx_line(p.x, i, p.x+WIDTH, i);
   }
-  for(int i = p.x; i < p.x+BORDER; i++) {
+  for(int i = p.x; i <= p.x+BORDER; i++) {
     gfx_line(i, p.y, i, p.y+HEIGHT);
   }
-  for(int i = p.x+WIDTH-BORDER; i < p.x+WIDTH; i++) {
+  for(int i = p.x+WIDTH-BORDER; i <= p.x+WIDTH; i++) {
     gfx_line(i, p.y, i, p.y+HEIGHT);
   }
 }
