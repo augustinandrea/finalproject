@@ -1,9 +1,19 @@
 #include "dictionary.h"
 
-// Read the words in and create the dictionary
-Dictionary::Dictionary(istream& input) {
+using namespace std;
+
+Dictionary::Dictionary() {
 }
 
-// check if the string is a legal scrabble word
-bool isLegal(string& s) {    // Is the string a legal scrabble word?
+// Read the words in and create the dictionary
+void Dictionary::Read(istream &inp) {
+  string s;
+  while(!inp.eof()) {
+    getline(inp,s);
+    words.insert(s);
+  }
+}
+
+bool Dictionary::isLegal(string &s) {
+  return words.find(s) == words.end() ? false : true;
 }
