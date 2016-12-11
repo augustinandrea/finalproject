@@ -1,6 +1,9 @@
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
 #include "scrabble.h"
 #include "gfxnew.h"
-#include <cmath>
 
 vector<Point> Board::triple_word_score = {
     Point(0,0), Point(0,7), Point(0,14), Point(7,0), Point(14,0), Point(14,7), Point(14,14)
@@ -124,10 +127,47 @@ void Board::Draw() {
 }
 
 void ScrabbleGame::Draw() {
+  Point p1, p2;
+  int width, height;
+
+  //Draw the board
   board.Draw();
+
+  // Draw the players
+  height = (gfx_windowheight() - (Square::height/2));
+  height = height - Square::height*(Board::SIZE+1.5);
+  height = height/players.size();
+  width = Square::width*Board::SIZE;
+  for(int i = 0; i < players.size(); i++) {
+    p1.x = Square::width;
+    p1.y = Square::height*(Board::SIZE+1.5);
+    p2.x = p1.x + width;
+    p2.y = p1.y + height;
+    players[i]->Draw(p1,p2);
+    p1.x = p1.x + height;
+  }
 }
 
+Letter::Letter(char ch, int pts) {
+  c = ch;
+  points = pts;
+  color = DARKBEIGE;
+  where = pile;
+}
+
+vector<LD> letterdist = {LD('A',9,1), LD('B',2,3), LD('C',2,3) };
+
 ScrabbleGame::ScrabbleGame() {
+  Letter *l;
+  // Initialize letters
+  for(auto i = letterdist.begin(); i != letterdist.end(); i++) {
+    for(int j = 0; j < i->number; j++) {
+      l = new Letter(i->c,i->points);
+      letters.push_back(l);
+      pile.push_back(l);
+    }
+  }
+  cout << "Pile size: " << pile.size() << endl;
 }
 
 int Player::displaywd;
@@ -136,4 +176,90 @@ int Player::displayht;
 Player::Player() {
   displayht = gfx_windowheight()*.1;
   displaywd = gfx_windowwidth()*.5;
+}
+
+LD::LD(char ch, int num, int pts) {
+  c = ch;
+  number = num;
+  points = pts;
+}
+
+void Letter::Draw(Point p) {
+  Point ul, lr;
+  int width, height;
+  string sbigfont = "-adobe-helvetica-bold-r-normal--28-*-*-*-*-*-*-*";
+  string ssmallfont = "-adobe-helvetica-bold-r-normal--14-*-*-*-*-*-*-*";
+  char text[2];
+
+  text[0] = c; text[1] = '\0';
+  width = Square::width*0.9;
+  height = Square::height*0.9;
+  char *cbigfont = new char[sbigfont.size() + 1];
+  strcpy(cbigfont, sbigfont.c_str());
+  char *csmallfont = new char[ssmallfont.size() + 1];
+  strcpy(csmallfont, ssmallfont.c_str());
+
+  // Draw the tile
+  ul.x = p.x + (Square::width*0.1)/2;
+  ul.y = p.y + (Square::height*0.1)/2;
+  lr.x = ul.x + width;
+  lr.y = ul.y + height;
+  gfx_color(color);
+  gfx_fill_rectangle(ul, lr);
+
+  // Write the letter on the tile
+  gfx_changefont(cbigfont);
+  gfx_color(WHITE);
+  int fwidth = gfx_textpixelwidth(text, cbigfont);
+  int fheight = gfx_textpixelheight(text, cbigfont);
+  ul.x = ul.x + (width-fwidth)/2;
+  ul.y = ul.y + fheight - (height-fheight)/4;
+  gfx_text(ul.x, ul.y, text);
+
+  // Write the value on the tile
+  gfx_changefont(csmallfont);
+  ul.y = ul.y + height/3;
+  ul.x = ul.x - (Square::width*0.1);
+  string stext = to_string(points);
+  char *ctext = new char[stext.size()+1];
+  strcpy(ctext, stext.c_str());
+  gfx_text(ul.x, ul.y, ctext);
+}
+
+void Player::Draw(Point ul, Point lr) {
+  Point p;
+
+  p.x = ul.x + Square::height/2;
+  p.y = ul.y + Square::height/2;
+  gfx_color(WHITE);
+  gfx_rectangle(ul,lr);
+  for(int i = 0; i < hand.size(); i++) {
+    hand[i]->Draw(p);
+    p.x = p.x + (Square::width * 1.5);
+  }
+}
+
+void ScrabbleGame::FillHands() {
+  Letter *l;
+  for(int i = 0; i < players.size(); i++) {
+    for(int j = players[i]->hand.size(); j < 7; j++) {
+      if((l = DrawRandomLetter()) != NULL) {
+	l->where = hand;
+	l->hand = players[i];
+	players[i]->hand.push_back(l);
+      } else {
+	return; // No more letters to draw
+      }
+    }
+  }	
+}
+
+Letter *ScrabbleGame::DrawRandomLetter() {
+  if(pile.size() == 0) return NULL;
+  int r = rand() % pile.size();
+  Letter *l = pile[r];
+  Letter *last = pile.back(); 
+  pile[r] = last;
+  pile.pop_back();
+  return l;
 }

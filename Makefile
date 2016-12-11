@@ -3,9 +3,9 @@
 
 # GFLAGS=-g -c -std=c++11 -DDEBUG
 GFLAGS=-g -c -std=c++11
-INCS=dictionary.h gfxnew.h polygon.h scrabble.h
+INCS=dictionary.h gfxnew.h polygon.h scrabble.h letter.h
 
-scrabble: scrabble.o polygon.o play.o dictionary.o gfxnew.o
+scrabble: scrabble.o polygon.o play.o dictionary.o gfxnew.o letter.o
 	g++ scrabble.o polygon.o play.o dictionary.o gfxnew.o -lX11 -o scrabble
 
 scrabble.o: scrabble.cpp ${INCS}
@@ -19,6 +19,9 @@ play.o: play.cpp ${INCS}
 
 dictionary.o: dictionary.cpp ${INCS}
 	g++ ${GFLAGS} dictionary.cpp -o dictionary.o
+
+letter.o: letter.cpp ${INCS}
+	g++ ${GFLAGS} letter.cpp -o letter.o
 
 clean:
 	rm -f *~ scrabble scrabble.o polygon.o play.o dictionary.o

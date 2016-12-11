@@ -7,9 +7,31 @@
 
 using namespace std;
 
+class Square;
+class Player;
+
+class LD {
+ public:
+  LD(char,int,int);
+  char c;
+  int number;
+  int points;
+};
+
 typedef enum { board, hand, pile } letter_location_t;
 
-class Player;
+class Letter {
+ public:
+  Letter();
+  Letter(char,int);
+  char c;             // The character
+  int points;         // How many points is this letter worth
+  letter_location_t where;  // Where am i?
+  Square *square;     // If on the board, what square are we on?
+  Player *hand;       // If in someones hand, which one?
+  void Draw(Point p); // Draw the letter on the screen
+  Color color;        // Color of a letter tile
+};
 
 class Square {
  public:
@@ -22,17 +44,6 @@ class Square {
   static int width;
   Color color;
   void Draw(Point p);
-};
-
-class Letter {
- public:
-  char c;             // The character
-  const int points;   // How many points is this letter worth
-  letter_location_t where;  // Where am i?
-  Square &square;     // If on the board, what square are we on?
-  Player &hand;       // If in someones hand, which one?
-  void Draw(Point p); // Draw the letter on the screen
-  static Color color; // Color of a letter tile
 };
 
 class Word {
@@ -49,8 +60,8 @@ class Word {
 class Player {
  public:
   Player();
-  void Draw(Point p);  // Draw the player record on the screen
-  vector<Letter> hand;  // The letters in the players hand
+  void Draw(Point upperleft, Point lowerright);  // Draw the player record on the screen
+  vector<Letter *> hand;  // The letters in the players hand
   vector<Word> words;   // Words on the board played by the player
   int score;  // Players current score
   static int displaywd;
@@ -74,10 +85,12 @@ class ScrabbleGame {
  public:
   ScrabbleGame();
   void Draw();
-  vector<Letter> letters;  // All of the letters
-  vector<Letter> pile;     // Letter draw pile
-  vector<Player> players;  // All of the players
+  vector<Letter *> letters;  // All of the letters
+  vector<Letter *> pile;     // Letter draw pile
+  vector<Player *> players;  // All of the players
   Board board;             // the board
+  Letter *DrawRandomLetter();  // Draw a random Letter from the pile
+  void FillHands();
 };
 
 #endif

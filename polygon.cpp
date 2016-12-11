@@ -87,3 +87,15 @@ void Polygon::Draw() {
 
 void Polygon::Rotate(double angle) {
 }
+
+void gfx_rectangle(Point upperleft, Point lowerright) {
+  gfx_rectangle(upperleft.x, upperleft.y,
+		     lowerright.x - upperleft.x,
+		     lowerright.y - upperleft.y);
+}
+
+void gfx_fill_rectangle(Point upperleft, Point lowerright) {
+  gfx_fill_rectangle(upperleft.x, upperleft.y,
+		     lowerright.x - upperleft.x,
+		     lowerright.y - upperleft.y);
+}

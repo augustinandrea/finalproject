@@ -37,6 +37,8 @@ class Point {
 };
 
 void gfx_line(Point p1, Point p2);
+void gfx_rectangle(Point upperleft, Point lowerright);
+void gfx_fill_rectangle(Point upperleft, Point lowerright);
 
 typedef vector<Point> point_vector_t;
 
