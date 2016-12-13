@@ -48,10 +48,11 @@ Square::Square() {
 // Draw the square. The squares upper left corner is at Point p
 void Square::Draw(Point p) {
   const int BORDER = 2;
+  Point lr;
+  lr.x = p.x + width;
+  lr.y = p.y + height;
   gfx_color(color);
-  for(int i = p.y; i < p.y+height; i++) {
-     gfx_line(p.x, i, p.x+width, i);
-  }
+  gfx_fill_rectangle(p,lr);
   // Draw the Borders
   gfx_color(WHITE);
   for(int i = p.y; i <= p.y+BORDER; i++) {
