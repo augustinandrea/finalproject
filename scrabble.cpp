@@ -68,14 +68,46 @@ void Square::Draw(Point p) {
     gfx_line(i, p.y, i, p.y+height);
   }
   // Write the text for the multipliers on the square
+  string ssmallfont = "-adobe-helvetica-bold-r-normal--12-*-*-*-*-*-*-*";
+  char *csmallfont = new char[ssmallfont.size() + 1];
+  strcpy(csmallfont, ssmallfont.c_str());
+  string sdouble = "Double";
+  char * cdouble = new char[sdouble.size() + 1];
+  strcpy(cdouble,sdouble.c_str());
+  gfx_changefont(csmallfont);
+  gfx_color(WHITE);
+  int fheight = gfx_textpixelheight(cdouble, csmallfont);
+  int fwidth =  gfx_textpixelwidth(cdouble, csmallfont);
+  p.y += (height + BORDER - 2*fheight)/2;
+  p.x += (width + BORDER -fwidth)/2;
   if(word_multiplier == 2) {
     // Double word score
+    gfx_text(p.x,p.y,"Double");
+    p.y += fheight;
+    gfx_text(p.x,p.y,"Word");
+    p.y += fheight;
+    gfx_text(p.x,p.y,"Score");
   } else if(word_multiplier == 3) {
     // Triple word score
+    gfx_text(p.x,p.y,"Triple");
+    p.y += fheight;
+    gfx_text(p.x,p.y,"Word");
+    p.y += fheight;
+    gfx_text(p.x,p.y,"Score");
   } else if(letter_multiplier == 2) {
     // Double letter score
+    gfx_text(p.x,p.y,"Double");
+    p.y += fheight;
+    gfx_text(p.x,p.y,"Letter");
+    p.y += fheight;
+    gfx_text(p.x,p.y,"Score");
   } else if(letter_multiplier == 3) {
     // Triple letter score
+    gfx_text(p.x,p.y,"Triple");
+    p.y += fheight;
+    gfx_text(p.x,p.y,"Letter");
+    p.y += fheight;
+    gfx_text(p.x,p.y,"Score");
   }
 }
 
@@ -118,7 +150,7 @@ Board::Board() {
 
 void Board::Draw() {
   // Draw the squares
-  Square::height = (gfx_windowheight()*.7 - Player::displayht)/SIZE;
+  Square::height = (gfx_windowheight()*.8 - Player::displayht)/SIZE;
   Square::width = Square::height;
   for(int i = 0; i < SIZE; i++) {
     for(int j = 0; j < SIZE; j++) {
@@ -147,6 +179,19 @@ void ScrabbleGame::Draw() {
     players[i]->Draw(p1,p2);
     p1.x = p1.x + height;
   }
+
+  // Display count of remaining tiles in the draw pile
+  Point p;
+  p.x = Square::width*(Board::SIZE+1.5);
+  p.y = Square::height*(Board::SIZE+1)/2;
+  string ssmallfont = "-adobe-helvetica-bold-r-normal--18-*-*-*-*-*-*-*";
+  char *csmallfont = new char[ssmallfont.size() + 1];
+  strcpy(csmallfont, ssmallfont.c_str());
+  gfx_changefont(csmallfont);
+  gfx_color(WHITE);
+  string s = "Tiles Remaining: " + to_string(pile.size());
+  gfx_text(p.x, p.y, s.c_str());
+
 }
 
 Letter::Letter(char ch, int pts) {
@@ -156,7 +201,10 @@ Letter::Letter(char ch, int pts) {
   where = pile;
 }
 
-vector<LD> letterdist = {LD('A',9,1), LD('B',2,3), LD('C',2,3) };
+vector<LD> letterdist = {LD('A',9,1), LD('B',2,3), LD('C',2,3), LD('D',4,4), LD('E',12,1), LD('F',2,4), LD('G',3,2),
+			 LD('H',2,4), LD('I',9,1), LD('J',1,8), LD('K',1,5), LD('L',4,1), LD('M',2,1), LD('N',6,1),
+			 LD('O',8,1), LD('P',2,1), LD('Q',1,10), LD('R',6,1), LD('S',4,1), LD('T',6,1), LD('U',4,1),
+			 LD('V',2,4), LD('W',2,4), LD('X',1,8), LD('Y',2,4), LD('Z',1,10), LD(' ',2,0)};
 
 ScrabbleGame::ScrabbleGame() {
   Letter *l;
@@ -168,7 +216,6 @@ ScrabbleGame::ScrabbleGame() {
       pile.push_back(l);
     }
   }
-  cout << "Pile size: " << pile.size() << endl;
 }
 
 int Player::displaywd;
@@ -264,3 +311,33 @@ Letter *ScrabbleGame::DrawRandomLetter() {
   pile.pop_back();
   return l;
 }
+
+void ScrabbleGame::HumanTurn() {
+  Point click;
+  char c;
+  while(true) {
+    if((c = gfx_wait()) == '\001') {
+      click.x = gfx_xpos();
+      click.y = gfx_ypos();
+      // Things we could click on:
+      // 1. Tile in our hand.  If it is selected, deselected it.
+      //    If it is not selected, select it and deselect any other tiles in our hand.
+      // 2. Square on the board.  If it is empty, and a tile in our hand is selected, put the tile on that square.
+      //    If the square is occupied, ignore it.
+      // 3. Button.  If "End Turn" the run the end of turn code.
+
+      // Check tiles in our hand
+      for(auto i = players[0]->hand.begin(); i != players[0]->hand.end(); i++) {
+	//l = 
+      }
+    }
+  }
+}
+
+void ScrabbleGame::ComputerTurn() {
+}
+
+bool ScrabbleGame::Finished() {
+  return false;
+}
+

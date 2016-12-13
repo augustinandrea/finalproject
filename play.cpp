@@ -27,12 +27,14 @@ int main() {
 
   human = new Player();
   game.players.push_back(human);
+  game.FillHands();
 
-  while(true) {
-    game.FillHands();
+  while(! game.Finished()) {
     game.Draw();
-
-    c = gfx_wait();
+    game.HumanTurn();
+    game.FillHands();
+    game.ComputerTurn();
+    game.FillHands();
   }
     
   exit(0);

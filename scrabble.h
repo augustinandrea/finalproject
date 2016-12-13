@@ -24,6 +24,7 @@ class Letter {
  public:
   Letter();
   Letter(char,int);
+  Point screenlocation;
   char c;             // The character
   int points;         // How many points is this letter worth
   letter_location_t where;  // Where am i?
@@ -91,6 +92,9 @@ class ScrabbleGame {
   Board board;             // the board
   Letter *DrawRandomLetter();  // Draw a random Letter from the pile
   void FillHands();
+  bool Finished();
+  void HumanTurn();
+  void ComputerTurn();
 };
 
 #endif
