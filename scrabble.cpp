@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <memory>
 #include "scrabble.h"
 #include "gfxnew.h"
 #include "dictionary.h"
@@ -52,8 +53,8 @@ void clear_errormsg() {
   gfx_fill_rectangle(p1,p2);
 }
 
-extern Dictionary d;
-extern ScrabbleGame game;
+extern Dictionary *global_dictionary;
+extern ScrabbleGame *global_game;
 
 int Square::width;
 int Square::height;
@@ -621,18 +622,18 @@ bool Word::Legal() {
   if(direction == horizontal) {
     int x = start->x;
     int y = start->y;
-    for(x > 0; game.board.squares[x-1][y].letter != NULL; x--);
+    for(x > 0; global_game->board.squares[x-1][y].letter != NULL; x--);
     letters.erase(letters.begin(), letters.end());
-    for( ; game.board.squares[x][y].letter != NULL; x++) {
-      letters.push_back(game.board.squares[x][y].letter);
+    for( ; global_game->board.squares[x][y].letter != NULL; x++) {
+      letters.push_back(global_game->board.squares[x][y].letter);
     }
   } else { // direction == vertical
     int x = start->x;
     int y = start->y;
-    for(y > 0; game.board.squares[x][y-1].letter != NULL; y--);
+    for(y > 0; global_game->board.squares[x][y-1].letter != NULL; y--);
     letters.erase(letters.begin(), letters.end());
-    for( ; game.board.squares[x][y].letter != NULL; y++) {
-      letters.push_back(game.board.squares[x][y].letter);
+    for( ; global_game->board.squares[x][y].letter != NULL; y++) {
+      letters.push_back(global_game->board.squares[x][y].letter);
     }
   }
 
@@ -643,10 +644,9 @@ bool Word::Legal() {
 
   cout << word << endl;
 
-  if(d.isLegal(word)) {
+  if(global_dictionary->isLegal(word)) {
     return true;
   } else {
     return false;
   }
-  
 }

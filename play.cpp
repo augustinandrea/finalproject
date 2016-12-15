@@ -7,14 +7,18 @@
 
 using namespace std;
 
-Dictionary d;
-ScrabbleGame game;
-
+Dictionary *global_dictionary;
+ScrabbleGame *global_game;
 
 int main() {
   int winwd, winht;
   ifstream inp;
   char c;
+  Dictionary d;
+  ScrabbleGame game;
+
+  global_dictionary = &d;
+  global_game = &game;
 
   winwd = 1200;
   winht = 1200;

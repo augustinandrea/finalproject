@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 #include "polygon.h"
 #include "button.h"
 
@@ -25,6 +26,7 @@ class Letter {
  public:
   Letter();
   Letter(char,int);
+  ~Letter() {cout << "Letter destructor called.";};
   Point ul, lr;       // Upper left and lower right corners of the letter on the screen
   Point drawpoint;    // Starting upper left point for drawing the letter box
   char c;             // The character
@@ -44,6 +46,7 @@ class Letter {
 class Square {
  public:
   Square();
+  ~Square() {cout << "Square destructor called." << endl;};
   void SetWordMultiplier(int);
   void SetLetterMultiplier(int);
   int word_multiplier;
@@ -63,6 +66,7 @@ typedef enum { unknown, horizontal, vertical } word_direction_t;
 
 class Word {
  public:
+  ~Word() {cout << "Word destructor called." << endl;};
   vector<Letter *> letters; // the letters in the word
   string GetString(); // c++ string for the word
   bool Legal();       // Is this a legal scrabble word ?

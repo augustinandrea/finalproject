@@ -3,10 +3,12 @@
 
 #include "polygon.h"
 #include <string>
+#include <iostream>
 
 class Button {
  public:
   Button(string);
+  ~Button() {cout << "Button destrructor called";};
   Point ul, lr;
   Color c;
   string label;
