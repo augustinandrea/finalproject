@@ -9,7 +9,6 @@ using namespace std;
 
 int main() {
   ScrabbleGame game;
-  Board board;
   int winwd, winht;
   Dictionary d;
   ifstream inp;
@@ -29,10 +28,16 @@ int main() {
   game.players.push_back(new Player());
   game.FillHands();
 
+  //Draw the board
+  game.board.Draw();
+
   while(! game.Finished()) {
     game.Draw();
-    for(int i = 0; i < game.players.size(); i++) game.HumanTurn(i);  // Run turns for all the human players
-    game.FillHands();
+    for(int i = 0; i < game.players.size(); i++) {
+      game.HumanTurn(i);  // Run turns for all the human players
+      game.FillHands();
+      game.players[i]->Draw();
+    }
     //game.ComputerTurn();
     //game.FillHands();
   }

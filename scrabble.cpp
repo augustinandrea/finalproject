@@ -164,9 +164,6 @@ void ScrabbleGame::Draw() {
   Point p1, p2;
   int width, height;
 
-  //Draw the board
-  board.Draw();
-
   // Draw the players
   height = (gfx_windowheight() - (Square::height/2));
   height = height - Square::height*(Board::SIZE+1.5);
@@ -189,7 +186,7 @@ void ScrabbleGame::Draw() {
   char *csmallfont = new char[ssmallfont.size() + 1];
   strcpy(csmallfont, ssmallfont.c_str());
   gfx_changefont(csmallfont);
-  gfx_color(WHITE);
+
   string s = "Tiles Remaining: " + to_string(pile.size());
   gfx_text(p.x, p.y, s.c_str());
 
@@ -434,10 +431,10 @@ void ScrabbleGame::HumanTurn(int pn) {
 	// Did not click on a tile on the board
 	// Try buttons
 	for(int i = 0; i < buttons.size(); i++) {
-	  if (buttons[i].ison(click)) {
-	    if(buttons[i].label == "End Turn") {
+	  if (buttons[i]->ison(click)) {
+	    if(buttons[i]->label == "End Turn") {
 	      return;
-	    } else if (buttons[i].label == "Redraw") {
+	    } else if (buttons[i]->label == "Redraw") {
 	    }
 	  }
 	}
