@@ -110,8 +110,8 @@ class ScrabbleGame {
   vector<Button *> buttons;
   Board board;             // the board
   Letter *DrawRandomLetter();  // Draw a random Letter from the pile
+  void DiscardHand(int);
   void FillHands();
-  void DiscardHand();
   bool Finished();
   void HumanTurn(int);
   void ComputerTurn();

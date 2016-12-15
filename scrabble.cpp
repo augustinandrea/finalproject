@@ -194,14 +194,11 @@ void ScrabbleGame::Draw() {
   // TBD
 
   // Draw buttons
-  for(int i = 0; i < buttons.size(); i++) { //End turn button
-    p.y = p.y + Square::height;
+  for(int i = 0; i < buttons.size(); i++) {
+    p.y = p.y + Square::height*1.5;
     buttons[i]->Draw(p);
   }
-  for(int i = 0; i < buttons.size(); i++) { //Redraw button
-     p.y = p.y + Square::height - 1.5;
-     buttons[i]->Redraw(p);
-  }	
+
 }
 
 Letter::Letter(char ch, int pts) {
@@ -230,7 +227,7 @@ ScrabbleGame::ScrabbleGame() {
 
   // Initialize buttons
   buttons.push_back(new Button("End Turn"));
-  buttons.push_back(new Button("Redraw"));
+  buttons.push_back(new Button("Draw New Hand"));
 }
 
 int Player::displaywd;
@@ -320,6 +317,19 @@ void Player::Draw(Point ulp, Point lrp) {
     hand[i]->Draw(p);
     p.x = p.x + (Square::width * 1.5);
   }
+
+  p.x = ul.x + Square::height * 1.5 * 7.5;
+  string ssmallfont = "-adobe-helvetica-bold-r-normal--14-*-*-*-*-*-*-*";
+  char *csmallfont = new char[ssmallfont.size() + 1];
+  strcpy(csmallfont, ssmallfont.c_str());
+  gfx_changefont(csmallfont);
+  gfx_color(WHITE);
+  for(int i = 0; i < words.size(); i++) {
+    string s = to_string(words[i]->score) + "  " + words[i]->GetString();
+    gfx_text(p.x, p.y, s.c_str());
+    p.y = p.y+16;
+  }
+  
 }
 
 void Player::Draw() {
@@ -343,20 +353,18 @@ void ScrabbleGame::FillHands() {
     }
   }	
 }
-void ScrabbleGame::DiscardHand() { // discards the players hand                             
+
+void ScrabbleGame::DiscardHand(int ph) {
   Letter *l;
-  for(int i = 0; i < players.size(); i++) {
-    for(int j = players[i]->hand.size(); j <= 7; j++) {
-      if((l = DrawRandomLetter()) != NULL) {
-        l->where = hand;
-        l->hand = players[i];
-        players[i]->pile.push_back(l);
-      } else {
-        return; // No more letters to draw.                                                 
-      }
-    }
+  for(int i = 0; i < players[ph]->hand.size(); i++) {
+    l = players[ph]->hand[i];
+    pile.push_back(l);
+    l->where = letter_location_t::pile;
   }
+  players[ph]->hand.erase(players[ph]->hand.begin(),players[ph]->hand.end());
+  FillHands();
 }
+
 Letter *ScrabbleGame::DrawRandomLetter() {
   if(pile.size() == 0) return NULL;
   int r = rand() % pile.size();
@@ -434,8 +442,7 @@ void ScrabbleGame::HumanTurn(int pn) {
 		  if(players[pn]->current_word == NULL) {
 		    players[pn]->current_word = new Word();
 		  }
-		  //TBD
-		  //players[pn]->current_word->AddLetter(l);
+		  players[pn]->current_word->AddLetter(l);
 		}
 	      }
 	    }
@@ -450,8 +457,22 @@ void ScrabbleGame::HumanTurn(int pn) {
 	for(int i = 0; i < buttons.size(); i++) {
 	  if (buttons[i]->ison(click)) {
 	    if(buttons[i]->label == "End Turn") {
+	      if(players[pn]->current_word != NULL) {
+		players[pn]->current_word->score = 0;
+		int word_mult = 1;
+		for(int j = 0; j < players[pn]->current_word->letters.size(); j++) {
+		  Letter *l = players[pn]->current_word->letters[j];
+		  players[pn]->current_word->score += l->points * l->square->letter_multiplier;
+		  word_mult = word_mult * l->square->word_multiplier;
+		}
+		players[pn]->current_word->score = players[pn]->current_word->score * word_mult;
+		players[pn]->words.push_back(players[pn]->current_word);
+	      }
+	      players[pn]->current_word = NULL;
 	      return;
-	    } else if (buttons[i]->label == "Redraw") {
+	    } else if (buttons[i]->label == "Draw New Hand") {
+	      DiscardHand(pn);
+	      return;
 	    }
 	  }
 	}
@@ -470,4 +491,13 @@ bool ScrabbleGame::Finished() {
 
 Word::Word() {
   direction = unknown;
+}
+
+void Word::AddLetter(Letter *l) {
+  letters.push_back(l);
+  word.push_back(l->c);
+}
+
+string Word::GetString() {
+  return word;
 }
