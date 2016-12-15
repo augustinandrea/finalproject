@@ -194,11 +194,14 @@ void ScrabbleGame::Draw() {
   // TBD
 
   // Draw buttons
-  for(int i = 0; i < buttons.size(); i++) {
+  for(int i = 0; i < buttons.size(); i++) { //End turn button
     p.y = p.y + Square::height;
     buttons[i]->Draw(p);
   }
-
+  for(int i = 0; i < buttons.size(); i++) { //Redraw button
+     p.y = p.y + Square::height - 1.5;
+     buttons[i]->Redraw(p);
+  }	
 }
 
 Letter::Letter(char ch, int pts) {
