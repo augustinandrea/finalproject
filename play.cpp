@@ -13,7 +13,6 @@ int main() {
   int winwd, winht;
   Dictionary d;
   ifstream inp;
-  Player *human;
   char c;
 
   winwd = 1200;
@@ -25,16 +24,17 @@ int main() {
   inp.open("wordlist.txt");
   d.Read(inp);
 
-  human = new Player();
-  game.players.push_back(human);
+  // Create two human players for now
+  game.players.push_back(new Player());
+  game.players.push_back(new Player());
   game.FillHands();
 
   while(! game.Finished()) {
     game.Draw();
-    game.HumanTurn();
+    for(int i = 0; i < game.players.size(); i++) game.HumanTurn(i);  // Run turns for all the human players
     game.FillHands();
-    game.ComputerTurn();
-    game.FillHands();
+    //game.ComputerTurn();
+    //game.FillHands();
   }
     
   exit(0);

@@ -110,7 +110,7 @@ class ScrabbleGame {
   Letter *DrawRandomLetter();  // Draw a random Letter from the pile
   void FillHands();
   bool Finished();
-  void HumanTurn();
+  void HumanTurn(int);
   void ComputerTurn();
 };
 

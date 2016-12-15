@@ -172,13 +172,13 @@ void ScrabbleGame::Draw() {
   height = height - Square::height*(Board::SIZE+1.5);
   height = height/players.size();
   width = Square::width*Board::SIZE;
+  p1.x = Square::width;
+  p1.y = Square::height*(Board::SIZE+1.4);
   for(int i = 0; i < players.size(); i++) {
-    p1.x = Square::width;
-    p1.y = Square::height*(Board::SIZE+1.5);
     p2.x = p1.x + width;
     p2.y = p1.y + height;
     players[i]->Draw(p1,p2);
-    p1.x = p1.x + height;
+    p1.y = p1.y + height*1.1;
   }
 
   // Display count of remaining tiles in the draw pile
@@ -353,7 +353,7 @@ Letter *ScrabbleGame::DrawRandomLetter() {
   return l;
 }
 
-void ScrabbleGame::HumanTurn() {
+void ScrabbleGame::HumanTurn(int pn) {
   Point click;
   char c;
   while(true) {
@@ -371,16 +371,16 @@ void ScrabbleGame::HumanTurn() {
 
       // Check tiles in players hand
       bool found = false;
-      for(int i = 0; i != players[0]->hand.size(); i++) {
-	if(players[0]->hand[i]->ison(click)) {
+      for(int i = 0; i != players[pn]->hand.size(); i++) {
+	if(players[pn]->hand[i]->ison(click)) {
 	  found = true;
-	  players[0]->hand[i]->Select();
-	  players[0]->hand[i]->Draw();
-	  for(int j = 0; j != players[0]->hand.size(); j++) {
+	  players[pn]->hand[i]->Select();
+	  players[pn]->hand[i]->Draw();
+	  for(int j = 0; j != players[pn]->hand.size(); j++) {
 	    if(j != i) {
-	      if(players[0]->hand[j]->selected) {
-		players[0]->hand[j]->DeSelect();
-		players[0]->hand[j]->Draw();
+	      if(players[pn]->hand[j]->selected) {
+		players[pn]->hand[j]->DeSelect();
+		players[pn]->hand[j]->Draw();
 	      }
 	    }
 	  }
@@ -397,9 +397,9 @@ void ScrabbleGame::HumanTurn() {
 	      found = true;
 	      cout << "Square [" << i << "][" << j << "] clicked" << endl;
 	      // If a tile in the players had is selected, put it on this square
-	      for(int k = 0; k < players[0]->hand.size(); k++) {
-		if(players[0]->hand[k]->selected) {
-		  Letter *l =  players[0]->hand[k];
+	      for(int k = 0; k < players[pn]->hand.size(); k++) {
+		if(players[pn]->hand[k]->selected) {
+		  Letter *l =  players[pn]->hand[k];
 		  
 		  // Put letter on the board
 		  l->where = letter_location_t::board;
@@ -408,20 +408,20 @@ void ScrabbleGame::HumanTurn() {
 		  l->Draw(board.squares[i][j].ul);
 		  
 		  // Remove letter from the players hand
-		  if(k < (players[0]->hand.size() - 1)) {
-		    for (int a = k; a < players[0]->hand.size(); a++) {
-		      players[0]->hand[a] = players[0]->hand[a+1];
+		  if(k < (players[pn]->hand.size() - 1)) {
+		    for (int a = k; a < players[pn]->hand.size(); a++) {
+		      players[pn]->hand[a] = players[pn]->hand[a+1];
 		    }
 		  }
-		  players[0]->hand.pop_back();
-		  players[0]->Draw();
+		  players[pn]->hand.pop_back();
+		  players[pn]->Draw();
 
 		  // Add letter to a word being built
-		  if(players[0]->current_word == NULL) {
-		    players[0]->current_word = new Word();
+		  if(players[pn]->current_word == NULL) {
+		    players[pn]->current_word = new Word();
 		  }
 		  //TBD
-		  //players[0]->current_word->AddLetter(l);
+		  //players[pn]->current_word->AddLetter(l);
 		}
 	      }
 	    }
