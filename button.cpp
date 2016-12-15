@@ -24,3 +24,7 @@ void Button::Draw(Point p) {
   gfx_color(WHITE);
   gfx_text(ul.x+width/10, ul.y+0.8*height, label.c_str());
 }
+
+bool Button::ison(Point p) {
+  return ((p.x >= ul.x) && (p.x <= lr.x) && (p.y >= ul.y) && (p.y <= lr.y));
+}

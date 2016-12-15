@@ -433,7 +433,14 @@ void ScrabbleGame::HumanTurn(int pn) {
 	// Did not click on a tile in the players hand, and
 	// Did not click on a tile on the board
 	// Try buttons
-	// TBD
+	for(int i = 0; i < buttons.size(); i++) {
+	  if (buttons[i].ison(click)) {
+	    if(buttons[i].label == "End Turn") {
+	      return;
+	    } else if (buttons[i].label == "Redraw") {
+	    }
+	  }
+	}
       }
       
     }

@@ -11,6 +11,7 @@ class Button {
   Color c;
   string label;
   void Draw(Point);
+  bool ison(Point);
 };
 
 #endif
