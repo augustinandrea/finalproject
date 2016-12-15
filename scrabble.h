@@ -109,6 +109,7 @@ class ScrabbleGame {
   Board board;             // the board
   Letter *DrawRandomLetter();  // Draw a random Letter from the pile
   void FillHands();
+  void DiscardHand();
   bool Finished();
   void HumanTurn(int);
   void ComputerTurn();
