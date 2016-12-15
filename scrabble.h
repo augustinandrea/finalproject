@@ -67,6 +67,8 @@ class Word {
   bool Legal();       // Is this a legal scrabble word ?
   Word();
   word_direction_t direction;
+  void AddLetter(Letter *);
+  int score;
  private:
   string word; // c++ string for the word
 };
@@ -77,7 +79,7 @@ class Player {
   void Draw(Point upperleft, Point lowerright);  // Draw the player record on the screen
   void Draw();
   vector<Letter *> hand;  // The letters in the players hand
-  vector<Word> words;   // Words on the board played by the player
+  vector<Word *> words;   // Words on the board played by the player
   Word *current_word;
   int score;  // Players current score
   static int displaywd;

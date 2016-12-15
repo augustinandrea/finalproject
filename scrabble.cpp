@@ -316,6 +316,19 @@ void Player::Draw(Point ulp, Point lrp) {
     hand[i]->Draw(p);
     p.x = p.x + (Square::width * 1.5);
   }
+
+  p.x = ul.x + Square::height * 1.5 * 7.5;
+  string ssmallfont = "-adobe-helvetica-bold-r-normal--14-*-*-*-*-*-*-*";
+  char *csmallfont = new char[ssmallfont.size() + 1];
+  strcpy(csmallfont, ssmallfont.c_str());
+  gfx_changefont(csmallfont);
+  gfx_color(WHITE);
+  for(int i = 0; i < words.size(); i++) {
+    string s = to_string(words[i]->score) + "  " + words[i]->GetString();
+    gfx_text(p.x, p.y, s.c_str());
+    p.y = p.y+16;
+  }
+  
 }
 
 void Player::Draw() {
@@ -417,8 +430,7 @@ void ScrabbleGame::HumanTurn(int pn) {
 		  if(players[pn]->current_word == NULL) {
 		    players[pn]->current_word = new Word();
 		  }
-		  //TBD
-		  //players[pn]->current_word->AddLetter(l);
+		  players[pn]->current_word->AddLetter(l);
 		}
 	      }
 	    }
@@ -433,6 +445,18 @@ void ScrabbleGame::HumanTurn(int pn) {
 	for(int i = 0; i < buttons.size(); i++) {
 	  if (buttons[i]->ison(click)) {
 	    if(buttons[i]->label == "End Turn") {
+	      if(players[pn]->current_word != NULL) {
+		players[pn]->current_word->score = 0;
+		int word_mult = 1;
+		for(int j = 0; j < players[pn]->current_word->letters.size(); j++) {
+		  Letter *l = players[pn]->current_word->letters[j];
+		  players[pn]->current_word->score += l->points * l->square->letter_multiplier;
+		  word_mult = word_mult * l->square->word_multiplier;
+		}
+		players[pn]->current_word->score = players[pn]->current_word->score * word_mult;
+		players[pn]->words.push_back(players[pn]->current_word);
+	      }
+	      players[pn]->current_word = NULL;
 	      return;
 	    } else if (buttons[i]->label == "Redraw") {
 	    }
@@ -453,4 +477,13 @@ bool ScrabbleGame::Finished() {
 
 Word::Word() {
   direction = unknown;
+}
+
+void Word::AddLetter(Letter *l) {
+  letters.push_back(l);
+  word.push_back(l->c);
+}
+
+string Word::GetString() {
+  return word;
 }
