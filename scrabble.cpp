@@ -43,12 +43,13 @@ Square::Square() {
   word_multiplier = 1;
   letter_multiplier = 1;
   color = BEIGE;
+  letter = NULL;
 }
 
 // Draw the square. The squares upper left corner is at Point p
 void Square::Draw(Point p) {
   const int BORDER = 2;
-  Point lr;
+  ul = p;
   lr.x = p.x + width;
   lr.y = p.y + height;
   gfx_color(color);
@@ -192,6 +193,15 @@ void ScrabbleGame::Draw() {
   string s = "Tiles Remaining: " + to_string(pile.size());
   gfx_text(p.x, p.y, s.c_str());
 
+  // Display count of tiles in the computer's hand
+  // TBD
+
+  // Draw buttons
+  for(int i = 0; i < buttons.size(); i++) {
+    p.y = p.y + Square::height;
+    buttons[i]->Draw(p);
+  }
+
 }
 
 Letter::Letter(char ch, int pts) {
@@ -199,6 +209,7 @@ Letter::Letter(char ch, int pts) {
   points = pts;
   color = DARKBEIGE;
   where = pile;
+  selected = false;
 }
 
 vector<LD> letterdist = {LD('A',9,1), LD('B',2,3), LD('C',2,3), LD('D',4,4), LD('E',12,1), LD('F',2,4), LD('G',3,2),
@@ -216,6 +227,9 @@ ScrabbleGame::ScrabbleGame() {
       pile.push_back(l);
     }
   }
+
+  // Initialize buttons
+  buttons.push_back(new Button("End Turn"));
 }
 
 int Player::displaywd;
@@ -233,12 +247,14 @@ LD::LD(char ch, int num, int pts) {
 }
 
 void Letter::Draw(Point p) {
-  Point ul, lr;
+  Point tul, tlr;
   int width, height;
   string sbigfont = "-adobe-helvetica-bold-r-normal--28-*-*-*-*-*-*-*";
   string ssmallfont = "-adobe-helvetica-bold-r-normal--14-*-*-*-*-*-*-*";
   char text[2];
 
+  cout << "Drawing " << c << " at " << p.x << endl;
+  drawpoint = p;
   text[0] = c; text[1] = '\0';
   width = Square::width*0.9;
   height = Square::height*0.9;
@@ -254,28 +270,46 @@ void Letter::Draw(Point p) {
   lr.y = ul.y + height;
   gfx_color(color);
   gfx_fill_rectangle(ul, lr);
+  if(selected) {
+    // Draw a yellow boarder if selected
+    gfx_flush();
+    gfx_color(YELLOW);
+    draw_border(ul, lr, 2);
+  }
 
   // Write the letter on the tile
   gfx_changefont(cbigfont);
   gfx_color(WHITE);
   int fwidth = gfx_textpixelwidth(text, cbigfont);
   int fheight = gfx_textpixelheight(text, cbigfont);
-  ul.x = ul.x + (width-fwidth)/2;
-  ul.y = ul.y + fheight - (height-fheight)/4;
-  gfx_text(ul.x, ul.y, text);
+  tul.x = ul.x + (width-fwidth)/2;
+  tul.y = ul.y + fheight - (height-fheight)/4;
+  gfx_text(tul.x, tul.y, text);
 
   // Write the value on the tile
   gfx_changefont(csmallfont);
-  ul.y = ul.y + height/3;
-  ul.x = ul.x - (Square::width*0.1);
+  tul.y = tul.y + height/3;
+  tul.x = tul.x - (Square::width*0.1);
   string stext = to_string(points);
   char *ctext = new char[stext.size()+1];
   strcpy(ctext, stext.c_str());
-  gfx_text(ul.x, ul.y, ctext);
+  gfx_text(tul.x, tul.y, ctext);
 }
 
-void Player::Draw(Point ul, Point lr) {
+// Is Point p on the Letter? Used to check if a click on the screen clicks on a Letter
+bool Letter::ison(Point p) {
+  return ((p.x >= ul.x) && (p.x <= lr.x) && (p.y >= ul.y) && (p.y <= lr.y));
+}
+
+bool Square::ison(Point p) {
+  return ((p.x >= ul.x) && (p.x <= lr.x) && (p.y >= ul.y) && (p.y <= lr.y));
+}
+
+void Player::Draw(Point ulp, Point lrp) {
   Point p;
+
+  ul = ulp;
+  lr = lrp;
 
   p.x = ul.x + Square::height/2;
   p.y = ul.y + Square::height/2;
@@ -285,6 +319,13 @@ void Player::Draw(Point ul, Point lr) {
     hand[i]->Draw(p);
     p.x = p.x + (Square::width * 1.5);
   }
+}
+
+void Player::Draw() {
+  gfx_color(BLACK);
+  gfx_fill_rectangle(ul,lr);
+  gfx_flush();
+  Draw(ul,lr);
 }
 
 void ScrabbleGame::FillHands() {
@@ -317,8 +358,10 @@ void ScrabbleGame::HumanTurn() {
   char c;
   while(true) {
     if((c = gfx_wait()) == '\001') {
+      gfx_wait();
       click.x = gfx_xpos();
       click.y = gfx_ypos();
+      cout << "Mouse click at: (" << click.x << "," << click.y << ")" << endl;
       // Things we could click on:
       // 1. Tile in our hand.  If it is selected, deselected it.
       //    If it is not selected, select it and deselect any other tiles in our hand.
@@ -326,10 +369,73 @@ void ScrabbleGame::HumanTurn() {
       //    If the square is occupied, ignore it.
       // 3. Button.  If "End Turn" the run the end of turn code.
 
-      // Check tiles in our hand
-      for(auto i = players[0]->hand.begin(); i != players[0]->hand.end(); i++) {
-	//l = 
+      // Check tiles in players hand
+      bool found = false;
+      for(int i = 0; i != players[0]->hand.size(); i++) {
+	if(players[0]->hand[i]->ison(click)) {
+	  found = true;
+	  players[0]->hand[i]->Select();
+	  players[0]->hand[i]->Draw();
+	  for(int j = 0; j != players[0]->hand.size(); j++) {
+	    if(j != i) {
+	      if(players[0]->hand[j]->selected) {
+		players[0]->hand[j]->DeSelect();
+		players[0]->hand[j]->Draw();
+	      }
+	    }
+	  }
+	}
       }
+
+      if(found == false) {
+	// Did not click on a tile in the players hand
+	// Try squares on the board
+	// TBD
+	for(int i = 0; i < Board::SIZE; i++) {
+	  for(int j = 0; j < Board::SIZE; j++) {
+	    if(board.squares[i][j].ison(click)) {
+	      found = true;
+	      cout << "Square [" << i << "][" << j << "] clicked" << endl;
+	      // If a tile in the players had is selected, put it on this square
+	      for(int k = 0; k < players[0]->hand.size(); k++) {
+		if(players[0]->hand[k]->selected) {
+		  Letter *l =  players[0]->hand[k];
+		  
+		  // Put letter on the board
+		  l->where = letter_location_t::board;
+		  l->square = &(board.squares[i][j]);
+		  l->DeSelect();
+		  l->Draw(board.squares[i][j].ul);
+		  
+		  // Remove letter from the players hand
+		  if(k < (players[0]->hand.size() - 1)) {
+		    for (int a = k; a < players[0]->hand.size(); a++) {
+		      players[0]->hand[a] = players[0]->hand[a+1];
+		    }
+		  }
+		  players[0]->hand.pop_back();
+		  players[0]->Draw();
+
+		  // Add letter to a word being built
+		  if(players[0]->current_word == NULL) {
+		    players[0]->current_word = new Word();
+		  }
+		  //TBD
+		  //players[0]->current_word->AddLetter(l);
+		}
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(found == false) {
+	// Did not click on a tile in the players hand, and
+	// Did not click on a tile on the board
+	// Try buttons
+	// TBD
+      }
+      
     }
   }
 }
@@ -341,3 +447,6 @@ bool ScrabbleGame::Finished() {
   return false;
 }
 
+Word::Word() {
+  direction = unknown;
+}

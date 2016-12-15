@@ -22,6 +22,8 @@ const Color DARKBLUE = Color(0,0,255);
 const Color BEIGE = Color(238,223,204);
 const Color PINK = Color(255,192,203);
 const Color DARKBEIGE = Color(205,175,149);
+const Color YELLOW = Color(255,255,0);
+const Color GREENYELLOW = Color(173,255,47);
 
 void gfx_color(Color c);
 
@@ -39,6 +41,7 @@ class Point {
 void gfx_line(Point p1, Point p2);
 void gfx_rectangle(Point upperleft, Point lowerright);
 void gfx_fill_rectangle(Point upperleft, Point lowerright);
+void draw_border(Point ul, Point lr, int b);
 
 typedef vector<Point> point_vector_t;
 

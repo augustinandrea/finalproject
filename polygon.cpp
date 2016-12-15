@@ -99,3 +99,22 @@ void gfx_fill_rectangle(Point upperleft, Point lowerright) {
 		     lowerright.x - upperleft.x,
 		     lowerright.y - upperleft.y);
 }
+
+void draw_border(Point ul, Point lr, int b) {
+  // Top border
+  for(int i = ul.y; i <= ul.y+b; i++) {
+     gfx_line(ul.x, i, lr.x-1, i);
+  }
+  // Bottom border
+  for(int i = lr.y-b-1; i <= lr.y-1; i++) {
+     gfx_line(ul.x, i, lr.x-1, i);
+  }
+  // Left border
+  for(int i = ul.x; i <= ul.x+b; i++) {
+    gfx_line(i, ul.y, i, lr.y-1);
+  }
+  // right border
+  for(int i = lr.x-b-1; i <= lr.x-1; i++) {
+    gfx_line(i, ul.y, i, lr.y-1);
+  }
+}
