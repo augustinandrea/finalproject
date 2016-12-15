@@ -4,6 +4,7 @@
 #include <iostream>
 #include "scrabble.h"
 #include "gfxnew.h"
+#include "dictionary.h"
 
 vector<Point> Board::triple_word_score = {
     Point(0,0), Point(0,7), Point(0,14), Point(7,0), Point(14,0), Point(14,7), Point(14,14)
@@ -35,6 +36,24 @@ vector<Point> Board::double_letter_score = { // TBD
   Point(12,6), Point(12,8),
   Point(14,3), Point(14,11)
 };
+void errormsg(Point p, string s) {
+  string ssmallfont = "-adobe-helvetica-bold-r-normal--14-*-*-*-*-*-*-*";
+  char *csmallfont = new char[ssmallfont.size() + 1];
+  strcpy(csmallfont, ssmallfont.c_str());
+  gfx_changefont(csmallfont);
+  gfx_color(RED);
+  gfx_text(p.x, p.y, s.c_str());
+}
+
+void clear_errormsg() {
+  Point p1((Board::SIZE+1)*Square::width+2, 0);
+  Point p2 = Point(p1.x + Square::width*5, p1.y + Square::height*4);
+  gfx_color(BLACK);
+  gfx_fill_rectangle(p1,p2);
+}
+
+extern Dictionary d;
+extern ScrabbleGame game;
 
 int Square::width;
 int Square::height;
@@ -47,6 +66,10 @@ Square::Square() {
 }
 
 // Draw the square. The squares upper left corner is at Point p
+void Square::Draw() {
+  Draw(ul);
+}
+
 void Square::Draw(Point p) {
   const int BORDER = 2;
   ul = p;
@@ -139,6 +162,12 @@ void Square::SetLetterMultiplier(int m) {
 Board::Board() {
   // Create the squares
   // Square 0,0 is the upper left hand corner, square SIZE,SIZE is the lower right hand corner
+  for(int i = 0; i < SIZE; i++) {
+    for(int k = 0; k < SIZE; k++) {
+      squares[i][k].x = i;
+      squares[i][k].y = k;
+    }
+  }
   for(int i = 0; i < double_word_score.size(); i++)
     squares[double_word_score[i].x][double_word_score[i].y].SetWordMultiplier(2);
   for(int i = 0; i < triple_word_score.size(); i++)
@@ -182,11 +211,14 @@ void ScrabbleGame::Draw() {
   Point p;
   p.x = Square::width*(Board::SIZE+1.5);
   p.y = Square::height*(Board::SIZE+1)/2;
+  gfx_color(BLACK);
+  gfx_fill_rectangle(p.x-20,p.y-20, p.x+400, p.y+40);
+  
   string ssmallfont = "-adobe-helvetica-bold-r-normal--18-*-*-*-*-*-*-*";
   char *csmallfont = new char[ssmallfont.size() + 1];
   strcpy(csmallfont, ssmallfont.c_str());
   gfx_changefont(csmallfont);
-
+  gfx_color(WHITE);
   string s = "Tiles Remaining: " + to_string(pile.size());
   gfx_text(p.x, p.y, s.c_str());
 
@@ -233,9 +265,10 @@ ScrabbleGame::ScrabbleGame() {
 int Player::displaywd;
 int Player::displayht;
 
-Player::Player() {
+Player::Player(int n) {
   displayht = gfx_windowheight()*.1;
   displaywd = gfx_windowwidth()*.5;
+  number = n;
 }
 
 LD::LD(char ch, int num, int pts) {
@@ -251,7 +284,6 @@ void Letter::Draw(Point p) {
   string ssmallfont = "-adobe-helvetica-bold-r-normal--14-*-*-*-*-*-*-*";
   char text[2];
 
-  cout << "Drawing " << c << " at " << p.x << endl;
   drawpoint = p;
   text[0] = c; text[1] = '\0';
   width = Square::width*0.9;
@@ -309,6 +341,7 @@ void Player::Draw(Point ulp, Point lrp) {
   ul = ulp;
   lr = lrp;
 
+  // Tiles
   p.x = ul.x + Square::height/2;
   p.y = ul.y + Square::height/2;
   gfx_color(WHITE);
@@ -318,7 +351,21 @@ void Player::Draw(Point ulp, Point lrp) {
     p.x = p.x + (Square::width * 1.5);
   }
 
+
+  // Player number
+  p.x = ul.x + 9;
+  p.y = p.y - 7;
+  string name = "Player " + to_string(number);
+  string slgfont = "-adobe-helvetica-bold-r-normal--18-*-*-*-*-*-*-*";
+  char *clgfont = new char[slgfont.size() + 1];
+  strcpy(clgfont, slgfont.c_str());
+  gfx_changefont(clgfont);
+  gfx_color(WHITE);
+  gfx_text(p.x, p.y, name.c_str());
+  
+  // Words and scores
   p.x = ul.x + Square::height * 1.5 * 7.5;
+  p.y = ul.y + Square::height/2;
   string ssmallfont = "-adobe-helvetica-bold-r-normal--14-*-*-*-*-*-*-*";
   char *csmallfont = new char[ssmallfont.size() + 1];
   strcpy(csmallfont, ssmallfont.c_str());
@@ -381,9 +428,10 @@ void ScrabbleGame::HumanTurn(int pn) {
   while(true) {
     if((c = gfx_wait()) == '\001') {
       gfx_wait();
+      clear_errormsg();
       click.x = gfx_xpos();
       click.y = gfx_ypos();
-      cout << "Mouse click at: (" << click.x << "," << click.y << ")" << endl;
+
       // Things we could click on:
       // 1. Tile in our hand.  If it is selected, deselected it.
       //    If it is not selected, select it and deselect any other tiles in our hand.
@@ -417,17 +465,22 @@ void ScrabbleGame::HumanTurn(int pn) {
 	  for(int j = 0; j < Board::SIZE; j++) {
 	    if(board.squares[i][j].ison(click)) {
 	      found = true;
-	      cout << "Square [" << i << "][" << j << "] clicked" << endl;
+	      if(board.squares[i][j].letter != NULL) {
+		// square is already occupied with a letter.  Do nothing.
+		break;
+	      }
+
 	      // If a tile in the players had is selected, put it on this square
 	      for(int k = 0; k < players[pn]->hand.size(); k++) {
 		if(players[pn]->hand[k]->selected) {
 		  Letter *l =  players[pn]->hand[k];
-		  
+
 		  // Put letter on the board
 		  l->where = letter_location_t::board;
 		  l->square = &(board.squares[i][j]);
 		  l->DeSelect();
 		  l->Draw(board.squares[i][j].ul);
+		  board.squares[i][j].letter = l;
 		  
 		  // Remove letter from the players hand
 		  if(k < (players[pn]->hand.size() - 1)) {
@@ -456,20 +509,38 @@ void ScrabbleGame::HumanTurn(int pn) {
 	// Try buttons
 	for(int i = 0; i < buttons.size(); i++) {
 	  if (buttons[i]->ison(click)) {
+	    // End Turn button
 	    if(buttons[i]->label == "End Turn") {
 	      if(players[pn]->current_word != NULL) {
-		players[pn]->current_word->score = 0;
-		int word_mult = 1;
-		for(int j = 0; j < players[pn]->current_word->letters.size(); j++) {
-		  Letter *l = players[pn]->current_word->letters[j];
-		  players[pn]->current_word->score += l->points * l->square->letter_multiplier;
-		  word_mult = word_mult * l->square->word_multiplier;
+		if(players[pn]->current_word->Legal()) {
+		  players[pn]->current_word->MakeFinal();
+		  players[pn]->words.push_back(players[pn]->current_word);
+		  players[pn]->current_word = NULL;
+		  return;
+		} else {
+		  // Illegal word or illegal placement of tiles
+		  // Undo everything. Put all the letters back in the players hand and
+		  // given them another chance.
+		  for(int k = 0; k < players[pn]->current_word->letters.size(); k++) {
+		    Letter *l = players[pn]->current_word->letters[k];
+		    l->square->letter = NULL;
+		    l->where = letter_location_t::hand;
+		    l->square->Draw();
+		    players[pn]->hand.push_back(l);
+		  }
+		  players[pn]->current_word = NULL;
+		  players[pn]->Draw();
+		  Point p(1.1*(Board::SIZE)*Square::width, 2*Square::height);
+		  errormsg(p, "Illegal word or illegal tile placement.");
+		  p.y += 14;
+		  errormsg(p, "Try again.");
 		}
-		players[pn]->current_word->score = players[pn]->current_word->score * word_mult;
-		players[pn]->words.push_back(players[pn]->current_word);
+	      } else {
+		// No tiles placed.  End turn.
+		return;
 	      }
-	      players[pn]->current_word = NULL;
-	      return;
+
+	      // Draw New Hand button
 	    } else if (buttons[i]->label == "Draw New Hand") {
 	      DiscardHand(pn);
 	      return;
@@ -494,10 +565,88 @@ Word::Word() {
 }
 
 void Word::AddLetter(Letter *l) {
+  if(letters.size() == 1) {
+    // The Word already has 1 letter.  This means we are adding the second letter.
+    // The direction (vertical or horizontal) is determined when we add the second letter
+    Letter *first_letter = letters[0];
+    if(first_letter->square->ul.x == l->square->ul.x) {
+      direction = vertical;
+    } else {
+      direction = horizontal;
+    }
+  }
   letters.push_back(l);
   word.push_back(l->c);
 }
 
 string Word::GetString() {
   return word;
+}
+
+void Word::MakeFinal() {
+  // Word should already be confirmed as legal
+  score = 0;
+  int word_mult = 1;
+  for(int j = 0; j < letters.size(); j++) {
+    Letter *l = letters[j];
+    score += l->points * l->square->letter_multiplier;
+    if(l->where != frozen_board) {
+      word_mult = word_mult * l->square->word_multiplier;
+    }
+    l->where = frozen_board;
+  }
+  score = score * word_mult;
+}
+
+bool Word::Legal() {
+  // First try to build the full word with the letters in the correct order
+  // including letters that were already on the board.
+  // If that fails, error and return.
+
+  for(int i = 0; i < (letters.size() - 1); i++) {
+    if(direction == horizontal) {
+      // All the y indices must be the same
+      if(letters[i]->square->y != letters[i+1]->square->y) {
+	return false;
+      }
+    } else { // vertical
+      // All the x indices must be the same
+      if(letters[i]->square->x != letters[i+1]->square->x) {
+	return false;
+      }      
+    }
+  }
+  
+  Square *start = letters[0]->square;
+  if(direction == horizontal) {
+    int x = start->x;
+    int y = start->y;
+    for(x > 0; game.board.squares[x-1][y].letter != NULL; x--);
+    letters.erase(letters.begin(), letters.end());
+    for( ; game.board.squares[x][y].letter != NULL; x++) {
+      letters.push_back(game.board.squares[x][y].letter);
+    }
+  } else { // direction == vertical
+    int x = start->x;
+    int y = start->y;
+    for(y > 0; game.board.squares[x][y-1].letter != NULL; y--);
+    letters.erase(letters.begin(), letters.end());
+    for( ; game.board.squares[x][y].letter != NULL; y++) {
+      letters.push_back(game.board.squares[x][y].letter);
+    }
+  }
+
+  word.erase(word.begin(), word.end());
+  for(int i = 0; i < letters.size(); i++) {
+    word.push_back(letters[i]->c);
+  }
+
+  cout << word << endl;
+
+  if(d.isLegal(word)) {
+    return true;
+  } else {
+    return false;
+  }
+  
 }

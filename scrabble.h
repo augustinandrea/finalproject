@@ -55,6 +55,8 @@ class Square {
   Point ul, lr;       // Upper left and lower right corners of the letter on the screen
   bool ison(Point p);
   Letter *letter;     // If a letter occupies this square this will point to it.  Otherwise NULL;
+  void Draw();
+  int x, y;
 };
 
 typedef enum { unknown, horizontal, vertical } word_direction_t;
@@ -62,20 +64,20 @@ typedef enum { unknown, horizontal, vertical } word_direction_t;
 class Word {
  public:
   vector<Letter *> letters; // the letters in the word
-  vector<Square *> squares; // the squares on the board used by this word
   string GetString(); // c++ string for the word
   bool Legal();       // Is this a legal scrabble word ?
   Word();
   word_direction_t direction;
   void AddLetter(Letter *);
   int score;
+  void MakeFinal();
  private:
   string word; // c++ string for the word
 };
 
 class Player {
  public:
-  Player();
+  Player(int);
   void Draw(Point upperleft, Point lowerright);  // Draw the player record on the screen
   void Draw();
   vector<Letter *> hand;  // The letters in the players hand
@@ -85,6 +87,7 @@ class Player {
   static int displaywd;
   static int displayht;
   Point ul, lr;
+  int number;
 };
 
 class Board {

@@ -7,10 +7,12 @@
 
 using namespace std;
 
+Dictionary d;
+ScrabbleGame game;
+
+
 int main() {
-  ScrabbleGame game;
   int winwd, winht;
-  Dictionary d;
   ifstream inp;
   char c;
 
@@ -24,8 +26,8 @@ int main() {
   d.Read(inp);
 
   // Create two human players for now
-  game.players.push_back(new Player());
-  game.players.push_back(new Player());
+  game.players.push_back(new Player(1));
+  game.players.push_back(new Player(2));
   game.FillHands();
 
   //Draw the board

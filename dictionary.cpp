@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "dictionary.h"
 
 using namespace std;
@@ -10,6 +11,7 @@ void Dictionary::Read(istream &inp) {
   string s;
   while(!inp.eof()) {
     getline(inp,s);
+    transform(s.begin(), s.end(), s.begin(), ::toupper);
     words.insert(s);
   }
 }
