@@ -20,8 +20,8 @@ int main() {
   global_dictionary = &d;
   global_game = &game;
 
-  winwd = 1200;
-  winht = 1200;
+  winwd = 660;
+  winht = 660;
 
   gfx_open(winwd, winht, "SCRABBLE");
   gfx_clear();

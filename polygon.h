@@ -59,4 +59,6 @@ class Polygon {
   double angle;
 };
 
+char *getfont(int base);
+
 #endif

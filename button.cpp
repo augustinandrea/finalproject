@@ -9,9 +9,7 @@ Button::Button(string s) {
 
 void Button::Draw(Point p) {
   ul = p;
-  string ssmallfont = "-adobe-helvetica-bold-r-normal--18-*-*-*-*-*-*-*";
-  char *csmallfont = new char[ssmallfont.size() + 1];
-  strcpy(csmallfont, ssmallfont.c_str());
+  char *csmallfont = getfont(18);
   gfx_changefont(csmallfont);
   char *clabel = new char[label.size() + 1];
   strcpy(clabel, label.c_str());

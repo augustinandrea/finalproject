@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
+#include <cstring>
 #include "polygon.h"
 #include "gfxnew.h"
 
@@ -118,3 +119,12 @@ void draw_border(Point ul, Point lr, int b) {
     gfx_line(i, ul.y, i, lr.y-1);
   }
 }
+
+char *getfont(int base) {
+  int fontsize = round((((double) gfx_windowheight())/1200.) * (double) base);
+  string font = "-adobe-helvetica-bold-r-normal--" + to_string(fontsize)+ "-*-*-*-*-*-*-*";
+  char *cfont = new char[font.size() + 1];
+  strcpy(cfont, font.c_str());
+  return cfont;
+}
+

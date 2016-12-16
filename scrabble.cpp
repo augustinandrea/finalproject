@@ -93,9 +93,7 @@ void Square::Draw(Point p) {
     gfx_line(i, p.y, i, p.y+height);
   }
   // Write the text for the multipliers on the square
-  string ssmallfont = "-adobe-helvetica-bold-r-normal--12-*-*-*-*-*-*-*";
-  char *csmallfont = new char[ssmallfont.size() + 1];
-  strcpy(csmallfont, ssmallfont.c_str());
+  char *csmallfont = getfont(12);
   string sdouble = "Double";
   char * cdouble = new char[sdouble.size() + 1];
   strcpy(cdouble,sdouble.c_str());
@@ -183,6 +181,7 @@ void Board::Draw() {
   // Draw the squares
   Square::height = (gfx_windowheight()*.8 - Player::displayht)/SIZE;
   Square::width = Square::height;
+  cout << "height " << Square::height << "gfx_wh " << gfx_windowheight() << endl;
   for(int i = 0; i < SIZE; i++) {
     for(int j = 0; j < SIZE; j++) {
       squares[i][j].Draw(Point(Square::height*(i+1),Square::width*(j+1)));
@@ -213,11 +212,9 @@ void ScrabbleGame::Draw() {
   p.x = Square::width*(Board::SIZE+1.5);
   p.y = Square::height*(Board::SIZE+1)/2;
   gfx_color(BLACK);
-  gfx_fill_rectangle(p.x-20,p.y-20, p.x+400, p.y+40);
+  gfx_fill_rectangle(p.x,p.y-20, p.x+400, p.y+40);
   
-  string ssmallfont = "-adobe-helvetica-bold-r-normal--18-*-*-*-*-*-*-*";
-  char *csmallfont = new char[ssmallfont.size() + 1];
-  strcpy(csmallfont, ssmallfont.c_str());
+  char *csmallfont = getfont(18);
   gfx_changefont(csmallfont);
   gfx_color(WHITE);
   string s = "Tiles Remaining: " + to_string(pile.size());
@@ -281,18 +278,14 @@ LD::LD(char ch, int num, int pts) {
 void Letter::Draw(Point p) {
   Point tul, tlr;
   int width, height;
-  string sbigfont = "-adobe-helvetica-bold-r-normal--28-*-*-*-*-*-*-*";
-  string ssmallfont = "-adobe-helvetica-bold-r-normal--14-*-*-*-*-*-*-*";
+  char *cbigfont = getfont(28);
+  char *csmallfont = getfont(14);
   char text[2];
 
   drawpoint = p;
   text[0] = c; text[1] = '\0';
   width = Square::width*0.9;
   height = Square::height*0.9;
-  char *cbigfont = new char[sbigfont.size() + 1];
-  strcpy(cbigfont, sbigfont.c_str());
-  char *csmallfont = new char[ssmallfont.size() + 1];
-  strcpy(csmallfont, ssmallfont.c_str());
 
   // Draw the tile
   ul.x = p.x + (Square::width*0.1)/2;
@@ -357,9 +350,7 @@ void Player::Draw(Point ulp, Point lrp) {
   p.x = ul.x + 9;
   p.y = p.y - 7;
   string name = "Player " + to_string(number);
-  string slgfont = "-adobe-helvetica-bold-r-normal--18-*-*-*-*-*-*-*";
-  char *clgfont = new char[slgfont.size() + 1];
-  strcpy(clgfont, slgfont.c_str());
+  char *clgfont = getfont(18);
   gfx_changefont(clgfont);
   gfx_color(WHITE);
   gfx_text(p.x, p.y, name.c_str());
@@ -367,9 +358,7 @@ void Player::Draw(Point ulp, Point lrp) {
   // Words and scores
   p.x = ul.x + Square::height * 1.5 * 7.5;
   p.y = ul.y + Square::height/2;
-  string ssmallfont = "-adobe-helvetica-bold-r-normal--14-*-*-*-*-*-*-*";
-  char *csmallfont = new char[ssmallfont.size() + 1];
-  strcpy(csmallfont, ssmallfont.c_str());
+  char *csmallfont = getfont(14);
   gfx_changefont(csmallfont);
   gfx_color(WHITE);
   for(int i = 0; i < words.size(); i++) {
